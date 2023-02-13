@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package tvmgrpc;
+
+message Response { int32 status = 1; }
+
+message KernelSource {
+  string name = 1;
+  string source = 2;
+}
+
+message BufferCreation {
+  int64 id = 1;
+  int64 size = 2;
+}
+
+message BufferData {
+  int64 id = 1;
+  float data = 2;
+}
+
+message WorkGroupData {
+  string kernel_name = 1;
+  int32 index = 2;
+  int64 size = 3;
+}
+
+message WorkDim {
+  string kernel_name = 1;
+  int64 dim = 3;
+}
+
+message BufferSet {
+  string kernel_name = 1;
+  int64 buffer_id = 2;
+}
+
+message ExecMessage {
+  int64 buffer_id = 1;
+  int64 size = 2;
+}
+
+message UserData { int64 user_id = 1; }
+
+message EmptyMessage {}
+
+service VortexService {
+  rpc GenerateNewUserId(EmptyMessage) returns (UserData);
+
+  rpc SetKernelSource(KernelSource) returns (Response);
+
+  rpc CreateBuffer(BufferCreation) returns (Response);
+
+  rpc SetBufferData(stream BufferData) returns (Response);
+
+  rpc SetWorkGroupData(stream WorkGroupData) returns (Response);
+
+  rpc SetKernelWorkDim(WorkDim) returns (Response);
+
+  rpc SetBufferToKernel(BufferSet) returns (Response);
+
+  rpc SetKernelReadyToExecute(KernelSource) returns (Response);
+
+  rpc Exec(ExecMessage) returns (Response);
+
+  rpc GetBufferData(BufferCreation) returns (stream BufferData);
+}
