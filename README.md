@@ -10,4 +10,4 @@ make -j4
 ```
 
 ## Server
-For run the server only run `server` in `build`.
+For running the server only run `server` in `build`.
