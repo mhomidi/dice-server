@@ -7,6 +7,8 @@
 #include "kernel_handler.hpp"
 #include "argument_handler.hpp"
 
+std::atomic<size_t> kernelQueueSize = {0};
+
 #define OPENCL_CHECK_ERROR(e)                                     \
     {                                                             \
         if (e != CL_SUCCESS)                                      \
@@ -130,13 +132,18 @@ void ExecutionHanlder::execute()
 
 void ExecutionHanlder::schedule()
 {
-    KernelHandler* kernelHandler = KernelHandler::getInstance(); 
+    KernelHandler *kernelHandler = KernelHandler::getInstance();
     while (true)
     {
-        if (kernelHandler->getReadyQueueSize() > 0) {
+        size_t size = kernelQueueSize.load(std::memory_order_relaxed);
+        if (size > 0)
+        {
             this->execute();
+            kernelQueueSize.fetch_sub(1, std::memory_order::memory_order_seq_cst);
         }
-        usleep(1000 * SLEEP_SCHED_MS);
+        else
+        {
+            usleep(1000 * SLEEP_SCHED_MS);
+        }
     }
-    
 }

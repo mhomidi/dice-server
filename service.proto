@@ -35,11 +35,6 @@ message BufferSet {
   int64 buffer_id = 2;
 }
 
-message ExecMessage {
-  int64 buffer_id = 1;
-  int64 size = 2;
-}
-
 message UserData { int64 user_id = 1; }
 
 message EmptyMessage {}
@@ -60,8 +55,6 @@ service VortexService {
   rpc SetBufferToKernel(BufferSet) returns (Response);
 
   rpc SetKernelReadyToExecute(KernelSource) returns (Response);
-
-  rpc Exec(ExecMessage) returns (Response);
 
   rpc GetBufferData(BufferCreation) returns (stream BufferData);
 }
