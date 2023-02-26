@@ -18,7 +18,7 @@ public:
     void execute();
     void downloadData();
 
-    void schedule();
+    void run();
 
 private:
     ExecutionHanlder();

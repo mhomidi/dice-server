@@ -1,9 +1,15 @@
 #include "server.h"
 #include <thread>
+#include "scheduler.hpp"
+
+void exec()
+{
+    ExecutionHanlder::getInstance()->run();
+}
 
 void sched()
 {
-    ExecutionHanlder::getInstance()->schedule();
+    MMFScheduler::getInstance()->startSchedule();
 }
 
 int main(int argc, char *argv[])
@@ -11,6 +17,7 @@ int main(int argc, char *argv[])
 #ifdef DEBUG
     std::cout << "debug def" << std::endl;
 #endif
+    std::thread executor(exec);
     std::thread scheduler(sched);
 
     grpc::ServerBuilder builder;

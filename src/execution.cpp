@@ -130,7 +130,7 @@ void ExecutionHanlder::execute()
     this->downloadData();
 }
 
-void ExecutionHanlder::schedule()
+void ExecutionHanlder::run()
 {
     KernelHandler *kernelHandler = KernelHandler::getInstance();
     while (true)
