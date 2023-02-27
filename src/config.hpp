@@ -1,0 +1,3 @@
+
+
+#define NULL_STR ""
