@@ -90,11 +90,8 @@ grpc::Status Server::SetKernelReadyToExecute(::grpc::ServerContext *context, con
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, request->name());
-    // KernelHandler::getInstance()->enqueueKernel(key);
-    // kernelQueueSize.fetch_add(1, std::memory_order_seq_cst);
-
+    // TODO: Burst time estimator should be added here.
     MMFScheduler::getInstance()->enqueueKernel(clientId, request->name(), 100);
-
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;

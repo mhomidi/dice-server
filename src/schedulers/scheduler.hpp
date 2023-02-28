@@ -3,6 +3,13 @@
 #include <queue>
 #include <tuple>
 #include <atomic>
+#include "readerwriterqueue.h"
+
+typedef struct
+{
+    std::atomic<size_t> start = {0};
+    std::atomic<size_t> end = {0};
+} BurstTime;
 
 class MMFScheduler
 {
@@ -17,6 +24,6 @@ private:
 
     static MMFScheduler *instance;
     std::map<std::string, std::atomic<size_t>> queueSizes;
-    std::map<std::string, std::queue<std::string>> clientQueue;
-    std::map<std::string, std::tuple<size_t, size_t>> clientBurstTime;
+    std::map<std::string, moodycamel::ReaderWriterQueue<std::tuple<std::string, size_t>>> clientQueue;
+    std::map<std::string, BurstTime> clientBurstTime;
 };

@@ -18,11 +18,11 @@ std::tuple<std::string, std::string> MMFScheduler::chooseKernel()
 {
     std::string clientId = NULL_STR;
     size_t minStartTime = -1;
-    std::map<std::string, std::tuple<size_t, size_t>>::iterator iter;
+    std::map<std::string, BurstTime>::iterator iter;
     for (iter = this->clientBurstTime.begin(); iter != this->clientBurstTime.end(); iter++)
     {
-        size_t startBurst = std::get<0>(iter->second);
-        size_t totalBurst = std::get<1>(iter->second);
+        size_t startBurst = iter->second.start.load(std::memory_order_relaxed);
+        size_t totalBurst = iter->second.end.load(std::memory_order_relaxed);
         if (startBurst < minStartTime && startBurst != totalBurst)
         {
             minStartTime = startBurst;
@@ -33,8 +33,11 @@ std::tuple<std::string, std::string> MMFScheduler::chooseKernel()
     {
         return std::make_tuple(NULL_STR, NULL_STR);
     }
-    std::string kernelName = this->clientQueue[clientId].front();
-    this->clientQueue[clientId].pop();
+    std::tuple<std::string, size_t> kernelData;
+    this->clientQueue[clientId].try_dequeue(kernelData);
+    std::string kernelName = std::get<0>(kernelData);
+    size_t kernelSize = std::get<1>(kernelData);
+    this->clientBurstTime[clientId].start.fetch_add(kernelSize, std::memory_order_seq_cst);
     return std::tuple<std::string, std::string>(clientId, kernelName);
 }
 
@@ -43,12 +46,9 @@ void MMFScheduler::enqueueKernel(std::string clientId, std::string kernelName, s
     if (this->queueSizes.find(clientId) == this->queueSizes.end())
     {
         this->queueSizes[clientId].store(0, std::memory_order_seq_cst);
-        this->clientBurstTime[clientId] = std::tuple<size_t, size_t>(0, 0);
     }
-    this->clientQueue[clientId].push(kernelName);
-    size_t startBurst = std::get<0>(clientBurstTime[clientId]);
-    size_t totalBurst = std::get<1>(clientBurstTime[clientId]) + size;
-    this->clientBurstTime[clientId] = std::tuple<size_t, size_t>(startBurst, totalBurst);
+    this->clientQueue[clientId].enqueue(std::tuple<std::string, size_t>(kernelName, size));
+    this->clientBurstTime[clientId].end.fetch_add(size, std::memory_order_relaxed);
     this->queueSizes[clientId].fetch_add(1, std::memory_order_seq_cst);
 }
 

@@ -47,8 +47,6 @@ void ExecutionHanlder::installKernel()
     std::string kernelSource = KernelHandler::getInstance()->getKernelSource(this->kernelKey);
     std::string kernelName = KernelHandler::getInstance()->getKernelName(this->kernelKey);
 
-    std::cout << kernelName << std::endl;
-
     const char *kernelStr = kernelSource.c_str();
     size_t length = kernelSource.size() + 1;
 
@@ -115,11 +113,11 @@ void ExecutionHanlder::downloadData()
 
         OPENCL_CALL(clEnqueueReadBuffer(this->commandQueue, obj, CL_TRUE, 0, argSize, argData, 0, NULL, NULL));
         ArgumentHandler::getInstance()->updateData(args[i], argData, argSize);
-        // std::cout << "Update Arg " << i << std::endl;
+        std::cout << "Update Arg " << i << std::endl;
     }
     std::cout << "Update all argument ... " << std::endl;
 
-    KernelHandler::getInstance()->clearKernel(this->kernelKey);
+    // KernelHandler::getInstance()->clearKernel(this->kernelKey);
 }
 
 void ExecutionHanlder::execute()
@@ -135,15 +133,11 @@ void ExecutionHanlder::run()
     KernelHandler *kernelHandler = KernelHandler::getInstance();
     while (true)
     {
-        size_t size = kernelQueueSize.load(std::memory_order_relaxed);
+        size_t size = kernelQueueSize.load(std::memory_order_seq_cst);
         if (size > 0)
         {
             this->execute();
             kernelQueueSize.fetch_sub(1, std::memory_order::memory_order_seq_cst);
-        }
-        else
-        {
-            usleep(1000 * SLEEP_SCHED_MS);
         }
     }
 }
