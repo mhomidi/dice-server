@@ -55,6 +55,18 @@
         "unordered_set": "cpp",
         "ratio": "cpp",
         "mutex": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "csignal": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "future": "cpp",
+        "iomanip": "cpp",
+        "scoped_allocator": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp",
+        "*.inc": "cpp",
+        "*.ipp": "cpp",
+        "cfenv": "cpp"
     }
 }

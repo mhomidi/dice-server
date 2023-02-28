@@ -59,10 +59,14 @@ get_target_property(grpc_cpp_plugin_location gRPC::grpc_cpp_plugin LOCATION)
 protobuf_generate(TARGET myproto LANGUAGE cpp)
 protobuf_generate(TARGET myproto LANGUAGE grpc GENERATE_EXTENSIONS .grpc.pb.h .grpc.pb.cc PLUGIN "protoc-gen-grpc=${grpc_cpp_plugin_location}")
 
-
 set(SOURCES
-    src/main.cpp src/server.cpp src/execution.cpp src/argument_handler.cpp src/kernel_handler.cpp
+    src/main.cpp src/server.cpp src/execution.cpp src/argument_handler.cpp src/kernel_handler.cpp src/schedulers/scheduler.cpp
 )
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/readerwriterqueue")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/schedulers")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src")
+
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
