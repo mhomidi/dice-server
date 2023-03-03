@@ -4,8 +4,8 @@
 #include <grpc/grpc.h>
 #include <grpcpp/server_builder.h>
 
-#include "argument_handler.hpp"
-#include "kernel_handler.hpp"
+#include "argument_data_model.hpp"
+#include "kernel_data_model.hpp"
 #include "execution.hpp"
 
 #include <iostream>

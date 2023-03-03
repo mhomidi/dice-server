@@ -15,7 +15,7 @@ grpc::Status Server::SetKernelSource(grpc::ServerContext *context, const ::tvmgr
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, request->name());
-    KernelHandler::getInstance()->addSource(key, request->source());
+    KernelDataModel::getInstance()->addSource(key, request->source());
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -25,7 +25,7 @@ grpc::Status Server::CreateBuffer(grpc::ServerContext *context, const ::tvmgrpc:
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, size_t> key(clientId, request->id());
-    ArgumentHandler::getInstance()->addBuffer(key, request->size());
+    ArgumentDataModel::getInstance()->addBuffer(key, request->size());
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -42,7 +42,7 @@ grpc::Status Server::SetBufferData(grpc::ServerContext *context, grpc::ServerRea
     }
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, size_t> key(clientId, bufferData.id());
-    ArgumentHandler::getInstance()->fillBufferData(key, data);
+    ArgumentDataModel::getInstance()->fillBufferData(key, data);
     data.clear();
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
@@ -59,7 +59,7 @@ grpc::Status Server::SetWorkGroupData(grpc::ServerContext *context, grpc::Server
     }
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, wg.kernel_name());
-    KernelHandler::getInstance()->setGlobalWorkSize(key, wgs);
+    KernelDataModel::getInstance()->setGlobalWorkSize(key, wgs);
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -69,7 +69,7 @@ grpc::Status Server::SetKernelWorkDim(grpc::ServerContext *context, const ::tvmg
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, request->kernel_name());
-    KernelHandler::getInstance()->setWorkDim(key, request->dim());
+    KernelDataModel::getInstance()->setWorkDim(key, request->dim());
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -80,7 +80,7 @@ grpc::Status Server::SetBufferToKernel(grpc::ServerContext *context, const ::tvm
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> kernelKey(clientId, request->kernel_name());
     std::tuple<std::string, size_t> bufferKey(clientId, request->buffer_id());
-    KernelHandler::getInstance()->setKernelArgument(kernelKey, bufferKey);
+    KernelDataModel::getInstance()->setKernelArgument(kernelKey, bufferKey);
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -101,7 +101,7 @@ grpc::Status Server::GetBufferData(::grpc::ServerContext *context, const ::tvmgr
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, size_t> bufferKey(clientId, request->id());
-    float *data = ArgumentHandler::getInstance()->getBufferData(bufferKey);
+    float *data = ArgumentDataModel::getInstance()->getBufferData(bufferKey);
     for (size_t i = 0; i < request->size() / sizeof(float); i++)
     {
         tvmgrpc::BufferData bufferData;

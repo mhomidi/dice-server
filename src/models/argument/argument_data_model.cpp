@@ -1,44 +1,44 @@
-#include "argument_handler.hpp"
+#include "argument_data_model.hpp"
 #include <iostream>
 
-ArgumentHandler *ArgumentHandler::instance = 0;
+ArgumentDataModel *ArgumentDataModel::instance = 0;
 
-ArgumentHandler *ArgumentHandler::getInstance()
+ArgumentDataModel *ArgumentDataModel::getInstance()
 {
     if (instance == nullptr)
-        return instance = new ArgumentHandler();
+        return instance = new ArgumentDataModel();
 
     return instance;
 }
 
-void ArgumentHandler::addBuffer(std::tuple<std::string, size_t> key, size_t size)
+void ArgumentDataModel::addBuffer(std::tuple<std::string, size_t> key, size_t size)
 {
     this->bufferSizes[key] = size;
 }
 
-void ArgumentHandler::fillBufferData(std::tuple<std::string, size_t> key, std::vector<float> &data)
+void ArgumentDataModel::fillBufferData(std::tuple<std::string, size_t> key, std::vector<float> &data)
 {
     this->bufferData[key] = data;
 }
 
-void ArgumentHandler::setBufferMemObject(std::tuple<std::string, size_t> key, cl_mem obj)
+void ArgumentDataModel::setBufferMemObject(std::tuple<std::string, size_t> key, cl_mem obj)
 {
     this->bufferMemObjs[key] = obj;
 }
 
-cl_mem ArgumentHandler::getBufferMemObject(std::tuple<std::string, size_t> key)
+cl_mem ArgumentDataModel::getBufferMemObject(std::tuple<std::string, size_t> key)
 {
     return this->bufferMemObjs[key];
 }
 
-size_t ArgumentHandler::getBufferSize(std::tuple<std::string, size_t> key)
+size_t ArgumentDataModel::getBufferSize(std::tuple<std::string, size_t> key)
 {
     if (this->bufferSizes.find(key) != this->bufferSizes.end())
         return this->bufferSizes[key];
     return (size_t)(-1);
 }
 
-float *ArgumentHandler::getBufferData(std::tuple<std::string, size_t> key)
+float *ArgumentDataModel::getBufferData(std::tuple<std::string, size_t> key)
 {
     if (this->bufferData[key].size() != (this->bufferSizes[key] / sizeof(float)))
     {
@@ -50,7 +50,7 @@ float *ArgumentHandler::getBufferData(std::tuple<std::string, size_t> key)
     return this->bufferData[key].data();
 }
 
-void ArgumentHandler::updateData(std::tuple<std::string, size_t> key, float *data, size_t size)
+void ArgumentDataModel::updateData(std::tuple<std::string, size_t> key, float *data, size_t size)
 {
     if (this->bufferData.find(key) == this->bufferData.end())
     {
