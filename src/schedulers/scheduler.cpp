@@ -63,7 +63,7 @@ void MMFScheduler::startSchedule()
         {
             continue;
         }
-        KernelHandler::getInstance()->enqueueKernel(key);
+        KernelDataModel::getInstance()->enqueueKernel(key);
         kernelQueueSize.fetch_add(1, std::memory_order_seq_cst);
     }
 }

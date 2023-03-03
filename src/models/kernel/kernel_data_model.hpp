@@ -3,10 +3,10 @@
 #include <queue>
 #include <tuple>
 
-class KernelHandler
+class KernelDataModel
 {
 public:
-    static KernelHandler *getInstance();
+    static KernelDataModel *getInstance();
     void addSource(std::tuple<std::string, std::string> key, std::string source);
     void setKernelArgument(std::tuple<std::string, std::string> kernelKey, std::tuple<std::string, size_t> argKey);
     void setWorkDim(std::tuple<std::string, std::string> kernelKey, size_t dim);
@@ -23,8 +23,8 @@ public:
     size_t getReadyQueueSize();
 
 private:
-    KernelHandler();
-    static KernelHandler *instance;
+    KernelDataModel();
+    static KernelDataModel *instance;
 
     std::map<std::tuple<std::string, std::string>, std::string> kernelSources;
     std::queue<std::tuple<std::string, std::string>> readyKernelQueue;
