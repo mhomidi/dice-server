@@ -1,5 +1,6 @@
 #include "server.h"
 #include "scheduler.hpp"
+#include "kernel_depend_model.hpp"
 
 long unsigned int userId = 0;
 
@@ -110,4 +111,11 @@ grpc::Status Server::GetBufferData(::grpc::ServerContext *context, const ::tvmgr
     }
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     return grpc::Status::OK;
+}
+
+grpc::Status SetKernelDependency(::grpc::ServerContext *context, const ::tvmgrpc::KernelDependency *request, ::tvmgrpc::Response *response)
+{
+    std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
+    std::string pred = request->pred();
+    std::string curr = request->curr();
 }

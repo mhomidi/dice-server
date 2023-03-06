@@ -37,6 +37,11 @@ message BufferSet {
 
 message UserData { int64 user_id = 1; }
 
+message KernelDependency {
+  string curr = 1;
+  string pred = 2;
+}
+
 message EmptyMessage {}
 
 service VortexService {
@@ -57,4 +62,6 @@ service VortexService {
   rpc SetKernelReadyToExecute(KernelSource) returns (Response);
 
   rpc GetBufferData(BufferCreation) returns (stream BufferData);
+
+  rpc SetKernelDependency(KernelDependency) returns (Response);
 }
