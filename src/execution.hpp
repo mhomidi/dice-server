@@ -6,7 +6,7 @@
 
 #define SLEEP_SCHED_MS 50
 
-extern std::atomic<size_t> kernelQueueSize;
+extern std::atomic<size_t> kernel_queue_qize;
 
 class ExecutionHanlder
 {

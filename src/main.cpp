@@ -9,7 +9,7 @@ void exec()
 
 void sched()
 {
-    MMFScheduler::getInstance()->startSchedule();
+    MMFScheduler::GetInstance()->StartSchedule();
 }
 
 int main(int argc, char *argv[])

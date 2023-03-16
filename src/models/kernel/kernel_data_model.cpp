@@ -86,3 +86,15 @@ size_t KernelDataModel::getReadyQueueSize()
 {
     return this->readyKernelQueue.size();
 }
+
+void KernelDataModel::SetKernelStatus(std::tuple<std::string, std::string> key, kernel_status_t status)
+{
+    this->kernelStatus[key] = status;
+}
+
+kernel_status_t KernelDataModel::GetKernelStatus(std::tuple<std::string, std::string> key)
+{
+    if (this->kernelStatus.find(key) == this->kernelStatus.end())
+        return KERNEL_STATUS_NOT_EXIST;
+    return this->kernelStatus[key];
+}
