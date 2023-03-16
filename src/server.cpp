@@ -17,6 +17,7 @@ grpc::Status Server::SetKernelSource(grpc::ServerContext *context, const ::tvmgr
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, request->name());
     KernelDataModel::getInstance()->addSource(key, request->source());
+    KernelDataModel::getInstance()->SetKernelStatus(key, KERNEL_STATUS_WAITING);
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -92,7 +93,7 @@ grpc::Status Server::SetKernelReadyToExecute(::grpc::ServerContext *context, con
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::tuple<std::string, std::string> key(clientId, request->name());
     // TODO: Burst time estimator should be added here.
-    MMFScheduler::getInstance()->enqueueKernel(clientId, request->name(), 100);
+    MMFScheduler::GetInstance()->EnqueueKernel(clientId, request->name(), 100);
     this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
     response->set_status(0);
     return grpc::Status::OK;
@@ -113,9 +114,13 @@ grpc::Status Server::GetBufferData(::grpc::ServerContext *context, const ::tvmgr
     return grpc::Status::OK;
 }
 
-grpc::Status SetKernelDependency(::grpc::ServerContext *context, const ::tvmgrpc::KernelDependency *request, ::tvmgrpc::Response *response)
+grpc::Status Server::SetKernelDependency(::grpc::ServerContext *context, const ::tvmgrpc::KernelDependency *request, ::tvmgrpc::Response *response)
 {
     std::string clientId = context->client_metadata().find(CLIENT_ID)->second.data();
     std::string pred = request->pred();
     std::string curr = request->curr();
+    std::tuple<std::string, std::string> key(clientId, curr);
+    KernelDependencyModel::GetInstance()->SetKernelDependancy(key, pred);
+    this->clientReqNum[clientId].fetch_add(1, std::memory_order_seq_cst);
+    return grpc::Status::OK;
 }

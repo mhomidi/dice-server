@@ -14,16 +14,17 @@ typedef struct
 class MMFScheduler
 {
 public:
-    static MMFScheduler *getInstance();
-    void startSchedule();
-    void enqueueKernel(std::string clientId, std::string kernelName, size_t size);
+    static MMFScheduler *GetInstance();
+    void StartSchedule();
+    void EnqueueKernel(std::string client_id, std::string kernel_name, size_t size);
 
 private:
     MMFScheduler() {}
-    std::tuple<std::string, std::string> chooseKernel();
+    std::tuple<std::string, std::string> ChooseKernel();
+    bool IsDependencyPassed(std::string client_id, std::string kernel_name);
 
     static MMFScheduler *instance;
-    std::map<std::string, std::atomic<size_t>> queueSizes;
-    std::map<std::string, moodycamel::ReaderWriterQueue<std::tuple<std::string, size_t>>> clientQueue;
-    std::map<std::string, BurstTime> clientBurstTime;
+    std::map<std::string, std::atomic<size_t>> queue_sizes;
+    std::map<std::string, moodycamel::ReaderWriterQueue<std::tuple<std::string, size_t>>> client_queue;
+    std::map<std::string, BurstTime> client_burst_time;
 };

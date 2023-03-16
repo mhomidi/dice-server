@@ -7,7 +7,7 @@
 #include "kernel_data_model.hpp"
 #include "argument_data_model.hpp"
 
-std::atomic<size_t> kernelQueueSize = {0};
+std::atomic<size_t> kernel_queue_qize = {0};
 
 #define OPENCL_CHECK_ERROR(e)                                     \
     {                                                             \
@@ -116,8 +116,7 @@ void ExecutionHanlder::downloadData()
         std::cout << "Update Arg " << i << std::endl;
     }
     std::cout << "Update all argument ... " << std::endl;
-
-    // KernelDataModel::getInstance()->clearKernel(this->kernelKey);
+    KernelDataModel::getInstance()->SetKernelStatus(this->kernelKey, KERNEL_STATUS_DONE);
 }
 
 void ExecutionHanlder::execute()
@@ -133,11 +132,11 @@ void ExecutionHanlder::run()
     KernelDataModel *kernelHandler = KernelDataModel::getInstance();
     while (true)
     {
-        size_t size = kernelQueueSize.load(std::memory_order_seq_cst);
+        size_t size = kernel_queue_qize.load(std::memory_order_seq_cst);
         if (size > 0)
         {
             this->execute();
-            kernelQueueSize.fetch_sub(1, std::memory_order::memory_order_seq_cst);
+            kernel_queue_qize.fetch_sub(1, std::memory_order::memory_order_seq_cst);
         }
     }
 }
