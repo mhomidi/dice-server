@@ -3,7 +3,7 @@
 
 ArgumentDataModel *ArgumentDataModel::instance = 0;
 
-ArgumentDataModel *ArgumentDataModel::getInstance()
+ArgumentDataModel *ArgumentDataModel::GetInstance()
 {
     if (instance == nullptr)
         return instance = new ArgumentDataModel();
@@ -11,56 +11,56 @@ ArgumentDataModel *ArgumentDataModel::getInstance()
     return instance;
 }
 
-void ArgumentDataModel::addBuffer(std::tuple<std::string, size_t> key, size_t size)
+void ArgumentDataModel::AddBuffer(std::tuple<std::string, size_t> key, size_t size)
 {
-    this->bufferSizes[key] = size;
+    this->buffer_sizes[key] = size;
 }
 
-void ArgumentDataModel::fillBufferData(std::tuple<std::string, size_t> key, std::vector<float> &data)
+void ArgumentDataModel::FillBufferData(std::tuple<std::string, size_t> key, std::vector<float> &data)
 {
-    this->bufferData[key] = data;
+    this->buffer_data[key] = data;
 }
 
-void ArgumentDataModel::setBufferMemObject(std::tuple<std::string, size_t> key, cl_mem obj)
+void ArgumentDataModel::SetBufferMemObject(std::tuple<std::string, size_t> key, cl_mem obj)
 {
-    this->bufferMemObjs[key] = obj;
+    this->buffer_mem_objs[key] = obj;
 }
 
-cl_mem ArgumentDataModel::getBufferMemObject(std::tuple<std::string, size_t> key)
+cl_mem ArgumentDataModel::GetBufferMemObject(std::tuple<std::string, size_t> key)
 {
-    return this->bufferMemObjs[key];
+    return this->buffer_mem_objs[key];
 }
 
-size_t ArgumentDataModel::getBufferSize(std::tuple<std::string, size_t> key)
+size_t ArgumentDataModel::GetBufferSize(std::tuple<std::string, size_t> key)
 {
-    if (this->bufferSizes.find(key) != this->bufferSizes.end())
-        return this->bufferSizes[key];
+    if (this->buffer_sizes.find(key) != this->buffer_sizes.end())
+        return this->buffer_sizes[key];
     return (size_t)(-1);
 }
 
-float *ArgumentDataModel::getBufferData(std::tuple<std::string, size_t> key)
+float *ArgumentDataModel::GetBufferData(std::tuple<std::string, size_t> key)
 {
-    if (this->bufferData[key].size() != (this->bufferSizes[key] / sizeof(float)))
+    if (this->buffer_data[key].size() != (this->buffer_sizes[key] / sizeof(float)))
     {
-        for (size_t i = 0; i < (this->bufferSizes[key] / sizeof(float)); i++)
+        for (size_t i = 0; i < (this->buffer_sizes[key] / sizeof(float)); i++)
         {
-            this->bufferData[key].push_back(0.0);
+            this->buffer_data[key].push_back(0.0);
         }
     }
-    return this->bufferData[key].data();
+    return this->buffer_data[key].data();
 }
 
-void ArgumentDataModel::updateData(std::tuple<std::string, size_t> key, float *data, size_t size)
+void ArgumentDataModel::UpdateData(std::tuple<std::string, size_t> key, float *data, size_t size)
 {
-    if (this->bufferData.find(key) == this->bufferData.end())
+    if (this->buffer_data.find(key) == this->buffer_data.end())
     {
         std::cout << "BAD update data ..." << std::endl;
         throw 1;
     }
 
-    this->bufferData[key].clear();
+    this->buffer_data[key].clear();
     for (int i = 0; i < size / sizeof(float); i++)
     {
-        this->bufferData[key].push_back(data[i]);
+        this->buffer_data[key].push_back(data[i]);
     }
 }

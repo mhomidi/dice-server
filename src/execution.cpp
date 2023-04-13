@@ -25,7 +25,7 @@ static cl_int error = 0;
 
 ExecutionHanlder *ExecutionHanlder::instance = 0;
 
-ExecutionHanlder *ExecutionHanlder::getInstance()
+ExecutionHanlder *ExecutionHanlder::GetInstance()
 {
     if (ExecutionHanlder::instance == nullptr)
         return instance = new ExecutionHanlder();
@@ -38,19 +38,19 @@ ExecutionHanlder::ExecutionHanlder()
     OPENCL_CALL(clGetPlatformIDs(1, &(this->platform_id), NULL));
     OPENCL_CALL(clGetDeviceIDs(this->platform_id, CL_DEVICE_TYPE_DEFAULT, 1, &(this->device_id), NULL));
     this->context = clCreateContext(NULL, 1, &(this->device_id), NULL, NULL, &error);
-    this->commandQueue = clCreateCommandQueue(this->context, this->device_id, 0, &error);
+    this->command_queue = clCreateCommandQueue(this->context, this->device_id, 0, &error);
 }
 
-void ExecutionHanlder::installKernel()
+void ExecutionHanlder::InstallKernel()
 {
-    this->kernelKey = KernelDataModel::getInstance()->getNextKernelForRun();
-    std::string kernelSource = KernelDataModel::getInstance()->getKernelSource(this->kernelKey);
-    std::string kernelName = KernelDataModel::getInstance()->getKernelName(this->kernelKey);
+    this->kernel_key = KernelDataModel::GetInstance()->GetNextKernelForRun();
+    std::string kernel_src = KernelDataModel::GetInstance()->GetKernelSource(this->kernel_key);
+    std::string kernel_name = KernelDataModel::GetInstance()->GetKernelName(this->kernel_key);
 
-    const char *kernelStr = kernelSource.c_str();
-    size_t length = kernelSource.size() + 1;
+    const char *kernel_str = kernel_src.c_str();
+    size_t length = kernel_src.size() + 1;
 
-    this->program = clCreateProgramWithSource(this->context, 1, &kernelStr, &length, &error);
+    this->program = clCreateProgramWithSource(this->context, 1, &kernel_str, &length, &error);
     if (this->program == NULL)
     {
         std::cout << "BAD source ..." << std::endl;
@@ -64,7 +64,7 @@ void ExecutionHanlder::installKernel()
         throw 1;
     }
 
-    this->kernel = clCreateKernel(this->program, kernelName.c_str(), &error);
+    this->kernel = clCreateKernel(this->program, kernel_name.c_str(), &error);
     if (error != CL_SUCCESS)
     {
         std::cout << "BAD Kernel ..." << std::endl;
@@ -73,69 +73,69 @@ void ExecutionHanlder::installKernel()
     std::cout << "Install Kernel Done ..." << std::endl;
 }
 
-void ExecutionHanlder::prepareArguments()
+void ExecutionHanlder::PrepareArguments()
 {
-    std::vector<std::tuple<std::string, size_t>> args = KernelDataModel::getInstance()->getKernelArgument(this->kernelKey);
+    std::vector<std::tuple<std::string, size_t>> args = KernelDataModel::GetInstance()->GetKernelArgument(this->kernel_key);
     for (size_t i = 0; i < args.size(); i++)
     {
-        size_t argSize = ArgumentDataModel::getInstance()->getBufferSize(args[i]);
-        float *argData;
-        argData = ArgumentDataModel::getInstance()->getBufferData(args[i]);
+        size_t arg_size = ArgumentDataModel::GetInstance()->GetBufferSize(args[i]);
+        float *arg_data;
+        arg_data = ArgumentDataModel::GetInstance()->GetBufferData(args[i]);
 
-        cl_mem memObject = clCreateBuffer(this->context, CL_MEM_READ_WRITE, argSize, NULL, &error);
-        OPENCL_CALL(clSetKernelArg(this->kernel, i, sizeof(cl_mem), (void *)&memObject));
-        ArgumentDataModel::getInstance()->setBufferMemObject(args[i], memObject);
+        cl_mem mem_object = clCreateBuffer(this->context, CL_MEM_READ_WRITE, arg_size, NULL, &error);
+        OPENCL_CALL(clSetKernelArg(this->kernel, i, sizeof(cl_mem), (void *)&mem_object));
+        ArgumentDataModel::GetInstance()->SetBufferMemObject(args[i], mem_object);
 
-        OPENCL_CALL(clEnqueueWriteBuffer(this->commandQueue, memObject, CL_TRUE, 0, argSize, argData, 0, NULL, NULL));
+        OPENCL_CALL(clEnqueueWriteBuffer(this->command_queue, mem_object, CL_TRUE, 0, arg_size, arg_data, 0, NULL, NULL));
     }
     std::cout << "Prepare Args Done ..." << std::endl;
 }
 
-void ExecutionHanlder::runKernel()
+void ExecutionHanlder::RunKernel()
 {
-    size_t *globalWorkSize = KernelDataModel::getInstance()->getGlobalWorkSize(this->kernelKey);
-    size_t workDim = KernelDataModel::getInstance()->getWorkDim(this->kernelKey);
-    OPENCL_CALL(clEnqueueNDRangeKernel(this->commandQueue, this->kernel, workDim, nullptr, globalWorkSize,
-                                       globalWorkSize + 3, 0, nullptr, nullptr));
-    OPENCL_CALL(clFinish(this->commandQueue));
+    size_t *global_work_size = KernelDataModel::GetInstance()->GetGlobalWorkSize(this->kernel_key);
+    size_t work_dim = KernelDataModel::GetInstance()->GetWorkDim(this->kernel_key);
+    OPENCL_CALL(clEnqueueNDRangeKernel(this->command_queue, this->kernel, work_dim, nullptr, global_work_size,
+                                       global_work_size + 3, 0, nullptr, nullptr));
+    OPENCL_CALL(clFinish(this->command_queue));
     std::cout << "Run kernel Done ... " << std::endl;
 }
 
-void ExecutionHanlder::downloadData()
+void ExecutionHanlder::DownloadData()
 {
-    std::vector<std::tuple<std::string, size_t>> args = KernelDataModel::getInstance()->getKernelArgument(this->kernelKey);
+    std::vector<std::tuple<std::string, size_t>> args = KernelDataModel::GetInstance()->GetKernelArgument(this->kernel_key);
     for (size_t i = 0; i < args.size(); i++)
     {
-        size_t argSize = ArgumentDataModel::getInstance()->getBufferSize(args[i]);
-        float *argData;
-        argData = ArgumentDataModel::getInstance()->getBufferData(args[i]);
-        cl_mem obj = ArgumentDataModel::getInstance()->getBufferMemObject(args[i]);
+        size_t arg_size = ArgumentDataModel::GetInstance()->GetBufferSize(args[i]);
+        float *arg_data;
+        arg_data = ArgumentDataModel::GetInstance()->GetBufferData(args[i]);
+        cl_mem obj = ArgumentDataModel::GetInstance()->GetBufferMemObject(args[i]);
 
-        OPENCL_CALL(clEnqueueReadBuffer(this->commandQueue, obj, CL_TRUE, 0, argSize, argData, 0, NULL, NULL));
-        ArgumentDataModel::getInstance()->updateData(args[i], argData, argSize);
+        OPENCL_CALL(clEnqueueReadBuffer(this->command_queue, obj, CL_TRUE, 0, arg_size, arg_data, 0, NULL, NULL));
+        ArgumentDataModel::GetInstance()->UpdateData(args[i], arg_data, arg_size);
         std::cout << "Update Arg " << i << std::endl;
     }
     std::cout << "Update all argument ... " << std::endl;
-    KernelDataModel::getInstance()->SetKernelStatus(this->kernelKey, KERNEL_STATUS_DONE);
+    KernelDataModel::GetInstance()->SetKernelStatus(this->kernel_key, KERNEL_STATUS_DONE);
 }
 
-void ExecutionHanlder::execute()
+void ExecutionHanlder::Execute()
 {
-    this->installKernel();
-    this->prepareArguments();
-    this->runKernel();
-    this->downloadData();
+    this->InstallKernel();
+    this->PrepareArguments();
+    this->RunKernel();
+    this->DownloadData();
 }
 
-void ExecutionHanlder::run()
+void ExecutionHanlder::Run()
 {
-    KernelDataModel *kernelHandler = KernelDataModel::getInstance();
+    KernelDataModel *kernel_handler = KernelDataModel::GetInstance();
     while (true)
     {
         size_t size = kernel_queue_qize.load(std::memory_order_seq_cst);
         if (size > 0)
         {
-            this->execute();
+            this->Execute();
             kernel_queue_qize.fetch_sub(1, std::memory_order::memory_order_seq_cst);
         }
     }

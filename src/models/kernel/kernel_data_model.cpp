@@ -5,7 +5,7 @@
 
 KernelDataModel *KernelDataModel::instance = 0;
 
-KernelDataModel *KernelDataModel::getInstance()
+KernelDataModel *KernelDataModel::GetInstance()
 {
     if (instance == nullptr)
         return instance = new KernelDataModel();
@@ -15,86 +15,81 @@ KernelDataModel *KernelDataModel::getInstance()
 
 KernelDataModel::KernelDataModel() {}
 
-void KernelDataModel::addSource(std::tuple<std::string, std::string> key, std::string source)
+void KernelDataModel::AddSource(std::tuple<std::string, std::string> key, std::string source)
 {
-    if (this->kernelSources.find(key) == this->kernelSources.end())
-        this->kernelSources[key] = source;
+    if (this->kernel_src.find(key) == this->kernel_src.end())
+        this->kernel_src[key] = source;
 }
 
-void KernelDataModel::enqueueKernel(std::tuple<std::string, std::string> key)
+void KernelDataModel::EnqueueKernel(std::tuple<std::string, std::string> key)
 {
-    this->readyKernelQueue.push(key);
+    this->ready_kernel_queue.push(key);
 }
 
-std::tuple<std::string, std::string> KernelDataModel::getNextKernelForRun()
+std::tuple<std::string, std::string> KernelDataModel::GetNextKernelForRun()
 {
-    std::tuple<std::string, std::string> kernelKey = this->readyKernelQueue.front();
-    this->readyKernelQueue.pop();
-    return kernelKey;
+    std::tuple<std::string, std::string> key = this->ready_kernel_queue.front();
+    this->ready_kernel_queue.pop();
+    return key;
 }
 
-std::string KernelDataModel::getKernelSource(std::tuple<std::string, std::string> key)
+std::string KernelDataModel::GetKernelSource(std::tuple<std::string, std::string> key)
 {
-    return this->kernelSources[key];
+    return this->kernel_src[key];
 }
 
-std::string KernelDataModel::getKernelName(std::tuple<std::string, std::string> key)
+std::string KernelDataModel::GetKernelName(std::tuple<std::string, std::string> key)
 {
     return std::get<1>(key);
 }
 
-void KernelDataModel::setKernelArgument(std::tuple<std::string, std::string> kernelKey, std::tuple<std::string, size_t> argKey)
+void KernelDataModel::setKernelArgument(std::tuple<std::string, std::string> key, std::tuple<std::string, size_t> arg_key)
 {
-    this->kernelsArguments[kernelKey].push_back(argKey);
+    this->kernel_arguments[key].push_back(arg_key);
 }
 
-std::vector<std::tuple<std::string, size_t>> KernelDataModel::getKernelArgument(std::tuple<std::string, std::string> kernelKey)
+std::vector<std::tuple<std::string, size_t>> KernelDataModel::GetKernelArgument(std::tuple<std::string, std::string> key)
 {
-    return this->kernelsArguments[kernelKey];
+    return this->kernel_arguments[key];
 }
 
-void KernelDataModel::setWorkDim(std::tuple<std::string, std::string> kernelKey, size_t dim)
+void KernelDataModel::SetWorkDim(std::tuple<std::string, std::string> key, size_t dim)
 {
-    this->kernelWorkDim[kernelKey] = dim;
+    this->kernel_work_dim[key] = dim;
 }
 
-void KernelDataModel::setGlobalWorkSize(std::tuple<std::string, std::string> kernelKey, std::vector<size_t> &globalWorkSize)
+void KernelDataModel::SetGlobalWorkSize(std::tuple<std::string, std::string> key, std::vector<size_t> &global_work_size)
 {
-    this->kernelGlobalWorkSize[kernelKey] = globalWorkSize;
+    this->kernel_global_work_size[key] = global_work_size;
 }
 
-size_t KernelDataModel::getWorkDim(std::tuple<std::string, std::string> kernelKey)
+size_t KernelDataModel::GetWorkDim(std::tuple<std::string, std::string> key)
 {
-    return this->kernelWorkDim[kernelKey];
+    return this->kernel_work_dim[key];
 }
 
-size_t *KernelDataModel::getGlobalWorkSize(std::tuple<std::string, std::string> kernelKey)
+size_t *KernelDataModel::GetGlobalWorkSize(std::tuple<std::string, std::string> key)
 {
-    return this->kernelGlobalWorkSize[kernelKey].data();
+    return this->kernel_global_work_size[key].data();
 }
 
-void KernelDataModel::clearKernel(std::tuple<std::string, std::string> kernelKey)
+void KernelDataModel::ClearKernel(std::tuple<std::string, std::string> key)
 {
-    if (this->kernelSources.find(kernelKey) == this->kernelSources.end())
+    if (this->kernel_src.find(key) == this->kernel_src.end())
         return;
 
-    this->kernelSources.erase(kernelKey);
-    this->kernelsArguments.erase(kernelKey);
-}
-
-size_t KernelDataModel::getReadyQueueSize()
-{
-    return this->readyKernelQueue.size();
+    this->kernel_src.erase(key);
+    this->kernel_arguments.erase(key);
 }
 
 void KernelDataModel::SetKernelStatus(std::tuple<std::string, std::string> key, kernel_status_t status)
 {
-    this->kernelStatus[key] = status;
+    this->kernel_status[key] = status;
 }
 
 kernel_status_t KernelDataModel::GetKernelStatus(std::tuple<std::string, std::string> key)
 {
-    if (this->kernelStatus.find(key) == this->kernelStatus.end())
+    if (this->kernel_status.find(key) == this->kernel_status.end())
         return KERNEL_STATUS_NOT_EXIST;
-    return this->kernelStatus[key];
+    return this->kernel_status[key];
 }

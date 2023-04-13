@@ -8,33 +8,32 @@
 class KernelDataModel
 {
 public:
-    static KernelDataModel *getInstance();
-    void addSource(std::tuple<std::string, std::string> key, std::string source);
-    void setKernelArgument(std::tuple<std::string, std::string> kernelKey, std::tuple<std::string, size_t> argKey);
-    void setWorkDim(std::tuple<std::string, std::string> kernelKey, size_t dim);
-    void setGlobalWorkSize(std::tuple<std::string, std::string> kernelKey, std::vector<size_t> &globalWorkSize);
-    void clearKernel(std::tuple<std::string, std::string> kernelKey);
-    void enqueueKernel(std::tuple<std::string, std::string> key);
+    static KernelDataModel *GetInstance();
+    void AddSource(std::tuple<std::string, std::string> key, std::string source);
+    void setKernelArgument(std::tuple<std::string, std::string> key, std::tuple<std::string, size_t> argKey);
+    void SetWorkDim(std::tuple<std::string, std::string> key, size_t dim);
+    void SetGlobalWorkSize(std::tuple<std::string, std::string> key, std::vector<size_t> &globalWorkSize);
+    void ClearKernel(std::tuple<std::string, std::string> key);
+    void EnqueueKernel(std::tuple<std::string, std::string> key);
     void SetKernelStatus(std::tuple<std::string, std::string> key, kernel_status_t status);
 
-    std::tuple<std::string, std::string> getNextKernelForRun();
-    std::string getKernelSource(std::tuple<std::string, std::string> key);
-    std::string getKernelName(std::tuple<std::string, std::string> key);
-    std::vector<std::tuple<std::string, size_t>> getKernelArgument(std::tuple<std::string, std::string> kernelKey);
-    size_t getWorkDim(std::tuple<std::string, std::string> kernelKey);
-    size_t *getGlobalWorkSize(std::tuple<std::string, std::string> kernelKey);
-    size_t getReadyQueueSize();
+    std::tuple<std::string, std::string> GetNextKernelForRun();
+    std::string GetKernelSource(std::tuple<std::string, std::string> key);
+    std::string GetKernelName(std::tuple<std::string, std::string> key);
+    std::vector<std::tuple<std::string, size_t>> GetKernelArgument(std::tuple<std::string, std::string> key);
+    size_t GetWorkDim(std::tuple<std::string, std::string> key);
+    size_t *GetGlobalWorkSize(std::tuple<std::string, std::string> key);
     kernel_status_t GetKernelStatus(std::tuple<std::string, std::string> key);
 
 private:
     KernelDataModel();
     static KernelDataModel *instance;
 
-    std::map<std::tuple<std::string, std::string>, std::string> kernelSources;
-    std::queue<std::tuple<std::string, std::string>> readyKernelQueue;
+    std::map<std::tuple<std::string, std::string>, std::string> kernel_src;
+    std::queue<std::tuple<std::string, std::string>> ready_kernel_queue;
 
-    std::map<std::tuple<std::string, std::string>, std::vector<std::tuple<std::string, size_t>>> kernelsArguments;
-    std::map<std::tuple<std::string, std::string>, std::vector<size_t>> kernelGlobalWorkSize;
-    std::map<std::tuple<std::string, std::string>, size_t> kernelWorkDim;
-    std::map<std::tuple<std::string, std::string>, kernel_status_t> kernelStatus;
+    std::map<std::tuple<std::string, std::string>, std::vector<std::tuple<std::string, size_t>>> kernel_arguments;
+    std::map<std::tuple<std::string, std::string>, std::vector<size_t>> kernel_global_work_size;
+    std::map<std::tuple<std::string, std::string>, size_t> kernel_work_dim;
+    std::map<std::tuple<std::string, std::string>, kernel_status_t> kernel_status;
 };
