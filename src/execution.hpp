@@ -1,8 +1,10 @@
-#include <CL/opencl.h>
 #include <string>
 #include <vector>
 #include <tuple>
 #include <atomic>
+
+#define CL_TARGET_OPENCL_VERSION 220
+#include <CL/opencl.h>
 
 #define SLEEP_SCHED_MS 50
 

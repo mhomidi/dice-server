@@ -59,7 +59,7 @@ void ArgumentDataModel::UpdateData(std::tuple<std::string, size_t> key, float *d
     }
 
     this->buffer_data[key].clear();
-    for (int i = 0; i < size / sizeof(float); i++)
+    for (unsigned i = 0; i < size / sizeof(float); i++)
     {
         this->buffer_data[key].push_back(data[i]);
     }

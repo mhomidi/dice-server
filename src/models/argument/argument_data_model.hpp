@@ -1,8 +1,10 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <CL/opencl.h>
 #include <tuple>
+
+#define CL_TARGET_OPENCL_VERSION 220
+#include <CL/opencl.h>
 
 #define CHUNK_SIZE 1000 * 16
 

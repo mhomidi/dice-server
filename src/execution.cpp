@@ -129,7 +129,6 @@ void ExecutionHanlder::Execute()
 
 void ExecutionHanlder::Run()
 {
-    KernelDataModel *kernel_handler = KernelDataModel::GetInstance();
     while (true)
     {
         size_t size = kernel_queue_qize.load(std::memory_order_seq_cst);
