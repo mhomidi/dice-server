@@ -25,8 +25,8 @@ public:
     grpc::Status SetBufferToKernel(grpc::ServerContext *context, const ::tvmgrpc::BufferSet *request, ::tvmgrpc::Response *response);
     grpc::Status SetKernelReadyToExecute(::grpc::ServerContext *context, const ::tvmgrpc::KernelSource *request, ::tvmgrpc::Response *response);
     grpc::Status GetBufferData(::grpc::ServerContext *context, const ::tvmgrpc::BufferCreation *request, ::grpc::ServerWriter<::tvmgrpc::BufferData> *writer);
-    grpc::Status SetKernelDependency(::grpc::ServerContext* context, const ::tvmgrpc::KernelDependency* request, ::tvmgrpc::Response* response);
+    grpc::Status SetKernelDependency(::grpc::ServerContext *context, const ::tvmgrpc::KernelDependency *request, ::tvmgrpc::Response *response);
 
 private:
-    std::map<std::string, std::atomic<int>> clientReqNum;
+    std::map<std::string, std::atomic<int>> client_req_num;
 };

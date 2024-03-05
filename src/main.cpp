@@ -4,7 +4,7 @@
 
 void exec()
 {
-    ExecutionHanlder::getInstance()->run();
+    ExecutionHanlder::GetInstance()->Run();
 }
 
 void sched()

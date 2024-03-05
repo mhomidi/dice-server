@@ -60,7 +60,7 @@ void MMFScheduler::EnqueueKernel(std::string client_id, std::string kernel_name,
     this->client_burst_time[client_id].end.fetch_add(size, std::memory_order_relaxed);
     this->queue_sizes[client_id].fetch_add(1, std::memory_order_seq_cst);
     std::tuple<std::string, std::string> key(client_id, kernel_name);
-    KernelDataModel::getInstance()->SetKernelStatus(key, KERNEL_STATUS_RUNNING);
+    KernelDataModel::GetInstance()->SetKernelStatus(key, KERNEL_STATUS_RUNNING);
 }
 
 void MMFScheduler::StartSchedule()
@@ -74,7 +74,7 @@ void MMFScheduler::StartSchedule()
         {
             continue;
         }
-        KernelDataModel::getInstance()->enqueueKernel(key);
+        KernelDataModel::GetInstance()->EnqueueKernel(key);
         kernel_queue_qize.fetch_add(1, std::memory_order_seq_cst);
     }
 }
@@ -86,7 +86,7 @@ bool MMFScheduler::IsDependencyPassed(std::string client_id, std::string kernel_
     for (std::string dep : kernel_deps)
     {
         std::tuple<std::string, std::string> dep_key(client_id, dep);
-        kernel_status_t dep_status = KernelDataModel::getInstance()->GetKernelStatus(dep_key);
+        kernel_status_t dep_status = KernelDataModel::GetInstance()->GetKernelStatus(dep_key);
         if (dep_status != KERNEL_STATUS_RUNNING && dep_status != KERNEL_STATUS_DONE)
             return false;
     }
