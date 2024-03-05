@@ -2,7 +2,7 @@
 An end-to-end open source platform for ML inference tasks scheduling in heterogeneous GPU clusters.
 
 # Installation
-For using vortex-server, follow the instruction: 
+For using Dice-server, follow the instruction: 
 - Clone the repository with option `--recursive`
 - We use [gRPC](https://grpc.io) for communication between server and clients. So, install gRPC from [here](https://grpc.io/docs/languages/cpp/quickstart/).
 - After installation of gRPC, you may need to modify your bash file. (My shell is zsh so I modified `~/.zshrc`)
