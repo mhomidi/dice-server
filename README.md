@@ -1,5 +1,5 @@
-# vortex-server
-An end-to-end open source platform for distributed learning simulation.
+# Dice-server
+An end-to-end open source platform for ML inference tasks scheduling in heterogeneous GPU clusters.
 
 # Installation
 For using vortex-server, follow the instruction: 
